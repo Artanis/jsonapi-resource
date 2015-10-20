@@ -1,6 +1,6 @@
 # jsonapi-resource
 
-An element that reads a JSON API endpoint.
+An element that reads a [JSON API](https://jsonapi.org) endpoint.
 
 ## Installation
 
