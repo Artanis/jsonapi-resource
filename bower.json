@@ -1,6 +1,6 @@
 {
   "name": "jsonapi-resource",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "authors": [
     "Erik Youngren <erik@youngren.us>"
   ],
@@ -21,7 +21,7 @@
   "dependencies": {
     "iron-ajax": "PolymerElements/iron-ajax#~1.0.6",
     "polymer": "Polymer/polymer#^1.1.0",
-    "simple-jsonapi": "https://github.com/Artanis/simple-jsonapi.git#0.1.0"
+    "simple-jsonapi": "https://github.com/Artanis/simple-jsonapi.git#^0.1.0"
   },
   "devDependencies": {
     "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
