@@ -1,0 +1,57 @@
+  <!doctype html>
+  <!--
+  @license
+  Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+  This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+  The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+  The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+  Code distributed by Google as part of the polymer project is also
+  subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+  -->
+  <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+      <title>jsonapi-resource Demo</title>
+      <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+      <link rel="import" href="../jsonapi-resource.html">
+    </head>
+    <body unresolved>
+      <template is="dom-bind">
+        <jsonapi-resource
+          url="http://vesta.moorpark.youngren.us:8000/api/articles"
+          params='{"include": "author"}'
+          origin="{{origin}}"
+          documents="{{docs}}"></jsonapi-resource>
+
+        <template is="dom-repeat" items="{{docs}}">
+          <section>
+            <article>
+              <header>
+                <h1>{{item.title}}</h1>
+                <p>by <span>{{item.author.name}}</span></p>
+              </header>
+
+              <div>{{item.body}}</div>
+
+              <section>
+                <header>
+                  <h1><span>{{item.comments.length}}</span> Comments</h1>
+                </header>
+                <jsonapi-resource
+                  url="{{item._relationships.comments.links.related}}"
+                  origin="{{origin}}"
+                  params='{"include": "author"}'
+                  documents="{{comments}}"></jsonapi-resource>
+
+                <template is="dom-repeat" items="{{comments}}">
+                  <div><span>{{item.author.name}}</span>&gt; <span>{{item.body}}</span></div>
+                </template>
+
+              </section>
+            </article>
+          </section>
+        </template>
+      </template>
+    </body>
+  </html>

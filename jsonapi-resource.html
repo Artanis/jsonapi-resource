@@ -1,0 +1,215 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
+<link rel="import" href="../simple-jsonapi/simple-jsonapi.html">
+<!--
+
+Example:
+
+Connect to a <a href="https://jsonapi.org">JSON API</a> endpoint.
+
+    <jsonapi-resource
+      url="http://example.com/api/articles"
+      documents="{{docs}}">
+    </jsonapi-resource>
+
+This is a *read-only* component. This component will download,
+deserialize, and resolve all the relationships it has data for, but
+it will not send changes back to the server.
+
+# Relative and Path links
+
+Some servers will send `links` objects with only resource paths, rather
+than absolute URLs (the type of URL a server makes is not specified by
+the JSON API specification, leaving it to the client to handle it).
+
+&lt;jsonapi-resource&gt; handles this with the `origin` parameter. An
+absolute URL will set the `origin` parameter, and a relative `url` will
+be rewritten to be absolute based on a provided `origin`. To follow a
+relative link, simply bind the two `origin` parameters together:
+
+    <jsonapi-resource
+      url="http://example.com/api/articles"
+      documents="{{docs}}"
+      origin="{{origin}}"></jsonapi-resource>
+
+    <template is="dom-repeat" items="{{docs}}">
+      <jsonapi-resource
+        url="{{item.comments._links.related}}"
+        origin="{{origin}}"></jsonapi-resource>
+    </template>
+
+Requests will not be made to relative URLs.
+
+@group JSON API
+@element jsonapi-resource
+@demo demo/index.html
+
+-->
+<dom-module id="jsonapi-resource">
+  <template>
+  <style>
+    :host {
+      display: block;
+    }
+  </style>
+  <iron-ajax id="ajax"
+    auto="{{_auto}}"
+    url="{{url}}"
+    params="{{params}}"
+    handle-as="json"
+    on-response="_handleResponse"></iron-ajax>
+  </template>
+  </dom-module>
+
+<script>
+
+  (function () {
+    'use strict';
+
+    Polymer({
+      is: 'jsonapi-resource',
+
+      properties: {
+        /**
+         * The URL of the resource.
+         *
+         * Absolute URLs will set the `origin` property.
+         * Relative/path-only URLs require the `origin` property, and
+         * will be rewritten with the absolute URL.
+         *
+         */
+        url: {
+          type: String,
+          value: undefined,
+          notify: true
+        },
+
+        /**
+         * URL origin (protocol, hostname, and port) to base relative
+         * URLs off of.
+         *
+         * This property will populate from an absolute `url` property,
+         * and will be used to rewrite a relative or path-only URL to
+         * be absolute.
+         *
+         */
+        origin: {
+          type: String,
+          value: "",
+          notify: true
+        },
+
+        /**
+         * Parameters to add to the request.
+         *
+         * Passed unchanged to the &lt;iron-ajax&gt; `params` property.
+         *
+         * See <a href="http://jsonapi.org/format/#fetching">Fetching Data</a>
+         * for more information on URLs and URL parameters, and
+         * <a href="https://elements.polymer-project.org/elements/iron-ajax">PolymerElements/iron-ajax</a>
+         * for more information on the `params` property.
+         *
+         */
+        params: {
+          type: Object,
+          value: {},
+          notify: true
+        },
+
+        /**
+         * Primary response data.
+         *
+         * A `ResourceObject` for single resources, or an array of
+         * `ResourceObject`s for a collection.
+         *
+         * See <a href="http://jsonapi.org/format/#document-resource-objects">Resource Objects</a> for more.
+         *
+         */
+        documents: {
+          type: SimpleJsonApi.ResourceObject,
+          value: undefined,
+          notify: true,
+          readOnly: true
+        },
+
+        /*
+         * Root-level links
+         *
+         * See <a href="http://jsonapi.org/format/#document-links">Links</a> for more.
+         *
+         */
+        links: {
+          type: Object,
+          value: {},
+          notify: true,
+          readOnly: true
+        },
+
+        /*
+         * Root-level meta-information.
+         *
+         * See <a href="http://jsonapi.org/format/#document-meta">Meta Information</a> for more.
+         *
+         */
+        meta: {
+          type: Object,
+          value: {},
+          notify: true,
+          readOnly: true
+        },
+
+        /**
+         * Only make requests when an absolute URL is available.
+         *
+         */
+        _auto: {
+          type: Boolean,
+          computed: "urlIsAbsolute(url)"
+        }
+      },
+
+      observers: [
+        "_setOriginAndUrl(origin, url)"
+      ],
+
+      /**
+       * Deserialize the response document.
+       *
+       */
+      _handleResponse: function (ev, r) {
+        this._setDocuments(SimpleJsonApi.deserialize(r.response));
+        this._setLinks(r.response.links);
+        this._setMeta(r.response.meta);
+      },
+
+      /**
+       * Ensures the `url` parameter is absolute, and that `origin` is
+       * set.
+       *
+       */
+      _setOriginAndUrl: function(origin, url) {
+        var parsedUrl;
+        if(this.urlIsAbsolute(url)) {
+          parsedUrl = new URL(url);
+        } else {
+          if(origin !== "") {
+            parsedUrl = new URL(url, origin);
+          }
+        }
+        this.url = parsedUrl.href;
+        this.origin = parsedUrl.origin;
+      },
+
+      /**
+       * Quick-check that the URL is absolute.
+       *
+       */
+      urlIsAbsolute: function(url) {
+        return new RegExp('^(?:[a-z]+:)?//', 'i').test(url)
+      },
+    });
+  })();
+
+
+</script>

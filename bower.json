@@ -1,0 +1,30 @@
+{
+  "name": "jsonapi-resource",
+  "version": "0.1.0",
+  "authors": [
+    "Erik Youngren <erik@youngren.us>"
+  ],
+  "description": "An element that reads a JSON API endpoint.",
+  "keywords": [
+    "web-component",
+    "polymer",
+    "jsonapi",
+    "json-api"
+  ],
+  "main": "jsonapi-resource.html",
+  "license": "MIT",
+  "homepage": "https://github.com/Artanis/jsonapi-resource/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "iron-ajax": "PolymerElements/iron-ajax#~1.0.6",
+    "polymer": "Polymer/polymer#^1.1.0",
+    "simple-jsonapi": "https://github.com/Artanis/simple-jsonapi.git#0.1.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*"
+  }
+}
